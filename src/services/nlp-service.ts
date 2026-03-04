@@ -112,9 +112,11 @@ export class NLPService {
       return null;
     }
 
-    const refDate = referenceDate
-      ? referenceDate.toJSDate()
-      : this.dateService.now().toJSDate();
+    // Create a JS Date that preserves the DateTime's calendar components
+    // (year, month, day, hour, minute) regardless of timezone.
+    // Direct toJSDate() would shift the date when system TZ differs from the DateTime's zone.
+    const dt = referenceDate || this.dateService.now();
+    const refDate = new Date(dt.year, dt.month - 1, dt.day, dt.hour, dt.minute, dt.second);
 
     try {
       const results = chronoInstance.parse(text, refDate);
